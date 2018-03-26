@@ -27,36 +27,24 @@ java -version
 
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement" : [
-    {
-      "Effect" : "Allow",
-      "Action" : [
-        "autoscaling:*",
-        "codedeploy:*",
-        "ec2:*",
-        "lambda:*",
-        "elasticloadbalancing:*",
-        "iam:AddRoleToInstanceProfile",
-        "iam:CreateInstanceProfile",
-        "iam:CreateRole",
-        "iam:DeleteInstanceProfile",
-        "iam:DeleteRole",
-        "iam:DeleteRolePolicy",
-        "iam:GetInstanceProfile",
-        "iam:GetRole",
-        "iam:GetRolePolicy",
-        "iam:ListInstanceProfilesForRole",
-        "iam:ListRolePolicies",
-        "iam:ListRoles",
-        "iam:PassRole",
-        "iam:PutRolePolicy",
-        "iam:RemoveRoleFromInstanceProfile", 
-        "s3:*"
-      ],
-      "Resource" : "*"
-    }    
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:*",
+                "codedeploy:*",
+                "ec2:*",
+                "lambda:*",
+                "elasticloadbalancing:*",
+                "s3:*",
+                "cloudwatch:*",
+                "logs:*",
+                "sns:*"
+            ],
+            "Resource": "*"
+        }
+    ]
 }
 ```
 
@@ -88,9 +76,10 @@ sudo aws configure
   * json
 
 
+설치파일 받기
 
 ```bash
-aws s3 cp s3://aws-codedeploy-ap-northeast-2/latest/install . --region ap-northeast-2
+wget https://aws-codedeploy-ap-northeast-2.s3.amazonaws.com/latest/install
 ```
 
 ```bash
