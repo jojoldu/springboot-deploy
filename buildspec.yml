@@ -1,11 +1,10 @@
 version: 0.2
 
 phases:
-  post_build:
+  build:
     commands:
       - echo Build completed on `date`
       - ./gradlew build
 artifacts:
   files:
     - build/libs/*.jar
-  discard-paths: yes
