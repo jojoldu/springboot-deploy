@@ -39,3 +39,57 @@ cd /var/log/aws/codedeploy-agent
 ![codedeploy11](./images/github/codedeploy11.png)
 
 ![codedeploy12](./images/github/codedeploy12.png)
+
+## CloudWatch로 CodeDeploy 로그 전송
+
+```bash
+wget https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
+wget https://s3.amazonaws.com/aws-codedeploy-us-east-1/cloudwatch/codedeploy_logs.conf
+chmod +x ./awslogs-agent-setup.py
+sudo python awslogs-agent-setup.py -n -r ap-northeast-2 -c s3://aws-codedeploy-us-east-1/cloudwatch/awslogs.conf
+sudo mkdir -p /var/awslogs/etc/config
+sudo cp codedeploy_logs.conf /var/awslogs/etc/config/
+```
+
+log 그룹을 변경하겠습니다.
+
+```bash
+sudo vim /var/awslogs/etc/config/codedeploy_logs.conf
+```
+
+```bash
+[codedeploy-agent-logs]
+datetime_format = %Y-%m-%d %H:%M:%S
+file = /var/log/aws/codedeploy-agent/codedeploy-agent.log
+log_stream_name = {instance_id}-codedeploy-agent-log
+log_group_name = dwlee-codedeploy-agent-log
+
+[codedeploy-updater-logs]
+file = /tmp/codedeploy-agent.update.log
+log_stream_name = {instance_id}-codedeploy-updater-log
+log_group_name = dwlee-codedeploy-updater-log
+
+[codedeploy-deployment-logs]
+file = /opt/codedeploy-agent/deployment-root/deployment-logs/codedeploy-agent-deployments.log
+log_stream_name = {instance_id}-codedeploy-deployments-log
+log_group_name = dwlee-codedeploy-deployments-log
+```
+
+```bash
+sudo service awslogs restart
+```
+
+EC2가 켜지면 바로 실행되도록 aws log agent 실행도 추가합니다.  
+기존에 생성한 ```codedeploy-startup.sh```에 추가합니다.
+
+```bash
+sudo vim /etc/init.d/codedeploy-startup.sh
+```
+
+```bash
+#!/bin/bash 
+echo 'Starting codedeploy-agent' 
+sudo service codedeploy-agent start
+echo 'Starting awslogs'
+sudo service awslogs restart
+```
