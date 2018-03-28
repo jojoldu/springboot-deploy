@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @SpringBootApplication
@@ -37,5 +37,14 @@ public class Application {
 				}
 			}
 		}
+	}
+
+	@GetMapping("/block")
+	public String block() throws InterruptedException {
+		String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+		System.out.println("/block: "+currentDate);
+		Thread.sleep(2000L);
+
+		return currentDate;
 	}
 }
