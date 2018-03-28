@@ -11,7 +11,7 @@ artifacts:
   files:
     - build/libs/*.jar
     - appspec.yml
-    - scripts/deploy.sh
+    - scripts/run.sh
 
 cache:
   paths:
