@@ -6,7 +6,13 @@ phases:
       - echo Build Starting on `date`
       - chmod +x ./gradlew
       - ./gradlew build
+
 artifacts:
   files:
     - build/libs/*.jar
     - appspec.yml
+    - scripts/
+
+cache:
+  paths:
+    - '/root/.m2/**/*'
