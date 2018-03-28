@@ -6,5 +6,5 @@ files:
 
 hooks:
   AfterInstall: # 배포가 끝나면 아래 명령어를 실행
-    - location: scripts/deploy.sh > /home/ec2-user/deploy.log
+    - location: scripts/run.sh > /home/ec2-user/deploy.log
       timeout: 180
