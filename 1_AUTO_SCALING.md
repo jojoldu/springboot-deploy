@@ -124,3 +124,29 @@ sudo service codedeploy-agent start
 pending이 avaliable로 변경되면 이미지 생성이 완료된 것입니다.
 
 ## 3. Auto Scaling Group에서 Launch Configuration 생성
+
+## CodePipeline CloudWatch Alarm
+
+```json
+{
+  "source": [
+    "aws.codepipeline"
+  ],
+  "detail-type": [
+    "CodePipeline Action Execution State Change"
+  ],
+  "detail": {
+    "state": [
+      "FAILED"
+    ],
+    "type": {
+      "category": [
+        "Deploy",
+        "Build"
+      ]
+    }
+  }
+}
+```
+
+

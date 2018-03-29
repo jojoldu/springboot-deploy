@@ -5,6 +5,9 @@ files:
     destination: /home/ec2-user/build/
 
 hooks:
-  AfterInstall: # 배포가 끝나면 아래 명령어를 실행
+  ApplicationStart:
     - location: scripts/deploy.sh
+      timeout: 180
+  ValidateService:
+    - location: scripts/healthCheck.sh
       timeout: 180
