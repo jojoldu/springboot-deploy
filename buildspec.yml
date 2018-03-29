@@ -6,10 +6,11 @@ phases:
       - echo Build Starting on `date`
       - chmod +x ./gradlew
       - ./gradlew build
+      - mv ./build/libs/*.jar ./
 
 artifacts:
   files:
-    - build/libs/*.jar
+    - *.jar
     - appspec.yml
     - scripts/run.sh
     - scripts/deploy.sh
