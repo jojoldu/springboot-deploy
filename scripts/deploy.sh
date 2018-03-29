@@ -1,6 +1,5 @@
 #!/bin/bash
-BASE_PATH=/home/ec2-user/build
-BUILD_PATH=$(ls $BASE_PATH/*.jar)
+BUILD_PATH=$(ls /home/ec2-user/build/jar/*.jar)
 JAR_NAME=$(basename $BUILD_PATH)
 echo "> build 파일명: $JAR_NAME"
 
@@ -8,15 +7,15 @@ echo "> build 파일 복사"
 DEPLOY_PATH=/home/ec2-user/
 cp $BUILD_PATH $DEPLOY_PATH
 
-echo "> application.jar 교체"
+echo "> springboot-deploy.jar 교체"
 CP_JAR_PATH=$DEPLOY_PATH$JAR_NAME
-APPLICATION_JAR=springboot-deploy.jar
-APPLICATION_PATH=$DEPLOY_PATH$APPLICATION_JAR
+APPLICATION_JAR_NAME=springboot-deploy.jar
+APPLICATION_JAR=$DEPLOY_PATH$APPLICATION_JAR_NAME
 
-ln -Tfs $CP_JAR_PATH $APPLICATION_PATH
+ln -Tfs $CP_JAR_PATH $APPLICATION_JAR
 
 echo "> 현재 실행중인 애플리케이션 pid 확인"
-CURRENT_PID=$(pgrep -f $APPLICATION_JAR)
+CURRENT_PID=$(pgrep -f $APPLICATION_JAR_NAME)
 
 if [ -z $CURRENT_PID ]
 then
@@ -27,8 +26,8 @@ else
   sleep 5
 fi
 
-echo "> $APPLICATION_PATH 배포"
-nohup java -jar $APPLICATION_PATH &
+echo "> $APPLICATION_JAR 배포"
+nohup java -jar $APPLICATION_JAR &
 
 echo "> 10초 후 Health check 시작"
 echo "> curl -s http://localhost:8080/health "
@@ -36,7 +35,7 @@ sleep 10
 
 for retry_count in {1..10}
 do
-  response=$(curl -s http://localhost:8080/health)
+  response=$(curl -s http://localhost:8080/actuator/health)
   up_count=$(echo $response | grep 'UP' | wc -l)
 
   if [ $up_count -ge 1 ]
