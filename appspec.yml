@@ -7,7 +7,5 @@ files:
 hooks:
   ApplicationStart:
     - location: scripts/deploy.sh
-      timeout: 180
   ValidateService:
     - location: scripts/healthCheck.sh
-      timeout: 180
