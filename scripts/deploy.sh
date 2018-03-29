@@ -28,4 +28,3 @@ fi
 
 echo "> $APPLICATION_JAR 배포"
 nohup java -jar $APPLICATION_JAR &
-exit 0

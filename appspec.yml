@@ -5,7 +5,9 @@ files:
     destination: /home/ec2-user/build/
 
 hooks:
-  ApplicationStart:
+  AfterInstall:
     - location: scripts/deploy.sh
+      runas: ec2-user
   ValidateService:
     - location: scripts/healthCheck.sh
+      runas: ec2-user
