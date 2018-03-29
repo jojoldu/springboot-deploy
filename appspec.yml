@@ -5,7 +5,7 @@ files:
     destination: /home/ec2-user/build/
 
 hooks:
-  AfterInstall:
+  ApplicationStart:
     - location: scripts/deploy.sh
       timeout: 180
       runas: ec2-user
