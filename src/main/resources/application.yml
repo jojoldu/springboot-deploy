@@ -1,5 +1,3 @@
 spring:
   jpa:
     open-in-view: false
-server:
-  port: 80
