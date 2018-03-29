@@ -6,7 +6,6 @@ phases:
       - echo Build Starting on `date`
       - chmod +x ./gradlew
       - ./gradlew build
-      - chmod +x ./scripts/*.sh
       - mkdir ./jar/
       - mv ./build/libs/*.jar ./jar/
 
