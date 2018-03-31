@@ -18,8 +18,21 @@ java -version
 
 ![1](./images/autoscaling/1.png)
 
+git을 설치합니다.
+
+```bash
+sudo yum install git
+git --version
+```
+
+```bash
+mkdir ~/app/
+mkdir ~/build/
+```
+
+여기서 ```~/app/```은 초기 인스턴스가 생성시 가장 최신의 프로젝트를 Git에서 받아서 저장할 디렉토리입니다.  
+그리고 ```~/build/```은 CodeDeploy 를 통해서 배포용 파일들을 받을 디렉토리입니다.
 이외에 필요한 것들이 더 있으시면 설치하시면 됩니다.  
-저는 스프링부트의 jar 실행외에 EC2에서 하는게 없어서 Java8만 설치합니다.  
 
 ### 1-2. Code Deploy Agent 설치
 

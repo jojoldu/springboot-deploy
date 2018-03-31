@@ -79,17 +79,3 @@ log_group_name = dwlee-codedeploy-deployments-log
 sudo service awslogs restart
 ```
 
-EC2가 켜지면 바로 실행되도록 aws log agent 실행도 추가합니다.  
-기존에 생성한 ```codedeploy-startup.sh```에 추가합니다.
-
-```bash
-sudo vim /etc/init.d/codedeploy-startup.sh
-```
-
-```bash
-#!/bin/bash 
-echo 'Starting codedeploy-agent' 
-sudo service codedeploy-agent start
-echo 'Starting awslogs'
-sudo service awslogs restart
-```
