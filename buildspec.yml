@@ -9,9 +9,9 @@ phases:
 
   post_build:
     commands:
-      - echo Before Build '$(basename ./build/libs/*.jar)'
+      - echo Before Build $(basename ./build/libs/*.jar)
       - mv ./build/libs/*.jar ./
-      - echo Before Build '$(basename ./build/libs/*.jar)'
+      - echo Before Build $(basename ./build/libs/*.jar)
 artifacts:
   files:
     - appspec.yml
