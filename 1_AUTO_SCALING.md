@@ -138,6 +138,39 @@ pending이 avaliable로 변경되면 이미지 생성이 완료된 것입니다.
 
 ## 3. Auto Scaling Group에서 Launch Configuration 생성
 
+사용자데이터
+
+```bash
+#!/bin/bash
+
+cd /home/ec2-user
+git clone https://github.com/jojoldu/springboot-deploy.git
+cd springboot-deploy
+./gradlew build
+cp /home/ec2-user/springboot-deploy/build/libs/*.jar /home/ec2-user/build/
+chown ec2-user:ec2-user /home/ec2-user/build/*.jar
+su ec2-user ./scripts/deploy.sh
+```
+
+개선
+
+```bash
+#!/bin/bash
+
+cd /home/ec2-user
+git clone https://github.com/jojoldu/springboot-deploy.git
+cd springboot-deploy
+su ec2-user ./scripts/init.sh
+```
+
+```bash
+#!/bin/bash
+./gradlew build
+cp /home/ec2-user/springboot-deploy/build/libs/*.jar /home/ec2-user/build/
+./deploy.sh
+```
+
+
 ## CodePipeline CloudWatch Alarm
 
 ```json
