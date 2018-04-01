@@ -27,4 +27,4 @@ else
 fi
 
 echo "> $APPLICATION_JAR 배포"
-nohup java -jar $APPLICATION_JAR &
+nohup java -jar $APPLICATION_JAR > /dev/null 2> /dev/null < /dev/null &

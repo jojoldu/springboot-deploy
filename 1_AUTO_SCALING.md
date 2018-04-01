@@ -138,7 +138,7 @@ pending이 avaliable로 변경되면 이미지 생성이 완료된 것입니다.
 
 ## 3. Auto Scaling Group에서 Launch Configuration 생성
 
-사용자데이터
+사용자 데이터
 
 ```bash
 #!/bin/bash
@@ -158,9 +158,8 @@ su ec2-user ./scripts/deploy.sh
 #!/bin/bash
 
 cd /home/ec2-user
-git clone https://github.com/jojoldu/springboot-deploy.git
-cd springboot-deploy
-su ec2-user ./scripts/init.sh
+su ec2-user git clone https://github.com/jojoldu/springboot-deploy.git
+su ec2-user /home/ec2-user/springboot-deploy/scripts/init.sh
 ```
 
 ```bash
