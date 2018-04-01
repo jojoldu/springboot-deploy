@@ -6,7 +6,7 @@ files:
 
 hooks:
   ApplicationStart:
-    - location: scripts/deploy.sh
+    - location: scripts/execute-deploy.sh
       timeout: 180
       runas: ec2-user
   ValidateService:
