@@ -195,3 +195,12 @@ cp /home/ec2-user/springboot-deploy/build/libs/*.jar /home/ec2-user/build/
 ```
 
 
+## 알게된 것들
+
+### 팁
+
+* appspec.yml -> hooks에 실행시킬 스크립트 안에서 다시 다른 스크립트를 실행하면 CodeDeploy의 로그가 남겨지지 않는다
+
+
+### 로그 위치
+
