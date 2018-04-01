@@ -15,19 +15,9 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-ext {
-    projectGroup = 'com.github.jojoldu.aws'
-    projectVersion = '0.0.2-SNAPSHOT'
-}
-group = '${projectGroup}'
-version = '${projectVersion}'
+group = 'com.github.jojoldu.aws'
+version = '0.0.2-SNAPSHOT'
 sourceCompatibility = 1.8
-
-
-jar {
-	baseName = 'springboot-deploy'
-	version =  '${projectVersion}'
-}
 
 repositories {
 	mavenCentral()
