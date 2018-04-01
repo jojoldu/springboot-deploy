@@ -12,7 +12,7 @@ artifacts:
   files:
     - appspec.yml
     - scripts/**
-    - **.jar
+    - springboot-deploy**.jar
 
 cache:
   paths:
