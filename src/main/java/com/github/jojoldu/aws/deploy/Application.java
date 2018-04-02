@@ -20,6 +20,11 @@ public class Application {
 		SpringApplication.run(Application.class, args);
 	}
 
+	@GetMapping("/version")
+	public String getVersion() {
+		return "1";
+	}
+
 	@GetMapping("/ip")
 	public String getIp() throws Exception {
 		URL url = new URL("http://checkip.amazonaws.com");
