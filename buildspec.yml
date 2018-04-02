@@ -6,17 +6,14 @@ phases:
       - echo Build Starting on `date`
       - chmod +x ./gradlew
       - ./gradlew build
-
   post_build:
     commands:
-      - echo Before Build $(basename ./build/libs/*.jar)
-      - echo $(pwd)
       - mv ./build/libs/*.jar ./
 artifacts:
   files:
     - appspec.yml
     - scripts/**
-    - s**.jar
+    - springboot-deploy*.jar
 
 cache:
   paths:
