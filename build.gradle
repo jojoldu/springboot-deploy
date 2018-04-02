@@ -15,6 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
+archivesBaseName = 'springboot-deploy'
 group = 'com.github.jojoldu.aws'
 version = '0.0.2-SNAPSHOT'
 sourceCompatibility = 1.8
