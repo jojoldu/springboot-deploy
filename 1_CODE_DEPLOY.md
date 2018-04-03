@@ -131,7 +131,7 @@ IAM 사용자는 보통 IAM 정책이 적용된 그룹 생성 -> 해당 그룹�
 ![ec2-setting5](./images/codedeploy/ec2-setting5.png)
 
 정책 선택은 아무것도 하지않고 넘깁니다.  
-(정책은 이후 JSON으로 한번에 적용할 예정입니다.)  
+(정책은 이후 **JSON으로 한번에 적용**할 예정입니다.)  
 
 ![ec2-setting6](./images/codedeploy/ec2-setting6.png)
 
@@ -146,6 +146,8 @@ IAM 사용자는 보통 IAM 정책이 적용된 그룹 생성 -> 해당 그룹�
 ![ec2-setting9](./images/codedeploy/ec2-setting9.png)
 
 ![ec2-setting10](./images/codedeploy/ec2-setting10.png)
+
+정책 문서에 하단의 JSON 코드를 그대로 추가합니다.
 
 ![ec2-setting11](./images/codedeploy/ec2-setting11.png)
 
@@ -172,43 +174,74 @@ IAM 사용자는 보통 IAM 정책이 적용된 그룹 생성 -> 해당 그룹�
 }
 ```
 
-#### 사용자 추가
+* Version은 무조건 ```"2012-10-17"``` 만 됩니다.
 
-![사용자1](./images/autoscaling/사용자1.png)
+정책이 성공적으로 추가됐습니다.
 
-![사용자2](./images/autoscaling/사용자2.png)
+![ec2-setting12](./images/codedeploy/ec2-setting12.png)
 
-#### EC2에 Code Deploy Agent 설치
+그룹 생성과 편집이 끝났으니, 적절한 사용자를 추가하겠습니다.  
+
+![ec2-setting13](./images/codedeploy/ec2-setting13.png)
+
+![ec2-setting14](./images/codedeploy/ec2-setting14.png)
+
+그룹에 사용자 추가하기 버튼을 클릭하신뒤, 방금 생성한 그룹을 선택합니다.
+
+![ec2-setting15](./images/codedeploy/ec2-setting15.png)
+
+![ec2-setting16](./images/codedeploy/ec2-setting16.png)
+
+최종 사용자 생성이 완료되면, 해당 사용자를 인증할 수 있는 엑세스키가 생성됩니다.  
+현재 페이지에서만 받을수 있으니, 얼른 ```.csv```를 다운받습니다.
+
+![ec2-setting17](./images/codedeploy/ec2-setting17.png)
+
+여기까지 하셨다면 다시 EC2로 돌아가서 Code Deploy Agent를 설치하겠습니다.
+
+### 1-3-3. EC2에 Code Deploy Agent 설치
+
+EC2에 CodeDeploy로 지정한 위치에서 파일을 받아 실행하기 위해서는 Code Deploy Agent가 설치되있어야만 합니다.  
+이를 진행하겠습니다.  
+  
+EC2에 접속하시고, ```aws-cli```를 먼저 설치합니다.
 
 ```bash
 sudo yum install -y aws-cli
 ```
+
+사용자 홈으로 이동하고 aws cli 설정을 시작합니다.
 
 ```bash
 cd /home/ec2-user/ 
 sudo aws configure
 ```
 
-![agent1](./images/autoscaling/agent1.png)
+![ec2-setting18](./images/codedeploy/ec2-setting18.png)
 
 * Access Key
+  * 좀전에 생성한 사용자의 엑세스키 (.csv파일에 있음)를 등록합니다.
 * Secret Access Key
+  * 좀전에 생성한 사용자의 시크릿키 (.csv파일에 있음)를 등록합니다.
 * region name
   * ap-northeast-2
   * 서울 리전을 얘기합니다.
 * output format
   * json
 
-
-설치파일 받기
+aws 설정이 끝나셨다면, Agent 설치파일을 다운받겠습니다.
 
 ```bash
 wget https://aws-codedeploy-ap-northeast-2.s3.amazonaws.com/latest/install
 ```
 
+해당 파일에 실행권한을 추가합니다.
+
 ```bash
 chmod +x ./install
 ```
+
+실행권한이 추가되셨다면, 설치를 진행합니다.
 
 ```bash
 sudo ./install auto
@@ -220,16 +253,32 @@ sudo ./install auto
 sudo service codedeploy-agent status
 ```
 
+![ec2-setting19](./images/codedeploy/ec2-setting19.png)
+
 마지막으로 EC2 인스턴스가 부팅되면 자동으로 AWS CodeDeploy Agent가 실행될 수 있도록 /etc/init.d/에 쉘 스크립트 파일을 하나 생성하겠습니다.
 
 ```bash
 sudo vim /etc/init.d/codedeploy-startup.sh
 ```
 
+스크립트 내용은 아래와 같습니다.
+
 ```bash
 #!/bin/bash 
 echo 'Starting codedeploy-agent' 
-sudo service codedeploy-agent start
+sudo service codedeploy-agent restart
 ```
+
+스크립트 파일을 저장한뒤, 실행권한을 추가합니다.
+
+```bash
+sudo chmod +x /etc/init.d/codedeploy-startup.sh
+```
+
+EC2에 CodeDeloy Agent 설치가 완료되었습니다!  
+
+## 1-4. Code Deploy 생성하기
+
+
 
 
