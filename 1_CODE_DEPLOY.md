@@ -331,21 +331,83 @@ AWS 웹 콘솔에 접속하셔서 AWS Code Deploy로 이동합니다.
 ![codedeploy3](./images/codedeploy/codedeploy3.png)
 
 
-![codedeploy4](./images/codedeploy/codedeploy4.png)
+![codedeploy4-1](./images/codedeploy/codedeploy4-1.png)
 
-![codedeploy4](./images/codedeploy/codedeploy5.png)
+환경 구성은 일단 EC2 인스턴스로 합니다.  
+(앞으로의 과정에서 오토스케일링 그룹 배포로 전환될 예정입니다.)
 
-![codedeploy4](./images/codedeploy/codedeploy6.png)
+![codedeploy4-2](./images/codedeploy/codedeploy4-2.png)
 
-![codedeploy4](./images/codedeploy/codedeploy7.png)
+여기서 서비스 역할을 보시면, IAM Role을 선택해야하는데요.  
+1-5-1에서 생성한 **Code Deploy용 Role**을 선택합니다.  
+(EC2 Role이 아닙니다.)
 
-![codedeploy4](./images/codedeploy/codedeploy8.png)
+![codedeploy4-3](./images/codedeploy/codedeploy4-3.png)
 
-![codedeploy4](./images/codedeploy/codedeploy9.png)
+최종 생성이 완료되시면 아래와 같이 해당 그룹이 보입니다.
 
-![codedeploy4](./images/codedeploy/codedeploy10.png)
+![codedeploy5](./images/codedeploy/codedeploy5.png)
 
-![codedeploy4](./images/codedeploy/codedeploy11.png)
+자 Code Deploy가 생성되었으니, 한번 실행해보겠습니다.
 
-![codedeploy4](./images/codedeploy/codedeploy12.png)
+## 1-6. Code Deploy 실행하기
 
+1-5에서 생성한 Code Deploy를 통해 실제 EC2에 배포를 진행해보겠습니다.  
+배포 그룹을 선택하신뒤, **작업 -> 새 개정 배포**를 클릭합니다.
+
+![codedeploy6](./images/codedeploy/codedeploy6.png)
+
+여기서 저희는 S3에 올라간 파일을 사용하지 않고, Github에서 바로 받아서 하도록 **Github**을 선택합니다.
+선택하신뒤, 하단을 보시면 Github 계정 연결 창이 나오는데, 본인의 계정을 입력하시고 **Github에 연결** 버튼을 클릭합니다.
+
+![codedeploy7](./images/codedeploy/codedeploy7.png)
+
+OAuth2가 자동으로 진행됩니다.
+
+![codedeploy8](./images/codedeploy/codedeploy8.png)
+
+계정 연결이 성공하시면, 배포할 프로젝트의 Github의 커밋 히스토리로 갑니다.  
+커밋 히스토리를 보시면 본인의 커밋 히스토리가 나오는데요.  
+배포할 버전의 커밋 ID를 복사합니다.
+
+![codedeploy9](./images/codedeploy/codedeploy9.png)
+
+복사한 커밋 ID와 저장소명을 Code Deploy에 등록합니다.  
+나머지 옵션은 디폴트로 선택합니다.
+
+![codedeploy10](./images/codedeploy/codedeploy10.png)
+
+다 끝나셨다면 **배포**를 클릭합니다.
+
+> Code Deploy는 **CI의 기능이 없습니다**.  
+즉, 지정된 위치의 파일을 전송하는 역할만 하기 때문에 CodeDeploy만 가지고는 이렇게 불편하게 하는데요.  
+보통은 젠킨스 / Travis CI / AWS Code Build 등을 통해 빌드후, **빌드된 파일을 받도록** 합니다.  
+이 과정은 차차 진행할 예정입니다.  
+TravisCI + Code Deploy를 사용하는 방법이 궁금하시다면, [이전의 포스팅](http://jojoldu.tistory.com/265)을 참고하세요!
+
+결과를 기다리시면!  
+배포가 성공됐음을 확인할 수 있습니다.  
+![codedeploy11](./images/codedeploy/codedeploy11.png)
+
+그럼 이제 본인의 EC2로 접속해서 Github에 올라간 프로젝트 파일들이 잘 도착했는지 확인합니다.  
+짜잔!
+
+![codedeploy12](./images/codedeploy/codedeploy12.png)
+
+Github에 올라간 파일들이 EC2에 성공적으로 도착했습니다.  
+
+## 마무리
+
+Code Deploy를 통해 Github에 올라간 파일들을 EC2에 전달하는 기능을 구현해봤습니다.  
+하지만 이게 실제 배포라고 하기엔 무리가 있죠?  
+현재 포스팅에선 다음의 과정들이 생략 되었습니다.  
+
+* Gradle을 통해 Build 과정 누락
+  * 빌드된 Jar파일 생성 과정 필요
+* 빌드된 Jar를 통해 스프링부트 자동 실행
+  * 기존 실행중인 스프링부트가 있다면 종료후, 실행
+* 자동으로 Github의 최신 버전을 배포 대상으로 지정
+  * 현재는 커밋 ID로 배포 버전을 결정
+
+자! 다음시간엔 이 문제들을 해결할 수 있도록 **Code Pipeline**을 사용하는 과정을 진행하겠습니다.  
+감사합니다^^
