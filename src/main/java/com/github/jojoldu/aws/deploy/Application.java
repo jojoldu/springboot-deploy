@@ -22,7 +22,7 @@ public class Application {
 
 	@GetMapping("/version")
 	public String getVersion() {
-		return "2";
+		return "1";
 	}
 
 	@GetMapping("/ip")

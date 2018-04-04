@@ -107,14 +107,6 @@ java -version
 
 ![ec2-setting3](./images/codedeploy/ec2-setting3.png)
 
-그리고 ```~/build/```디렉토리를 생성합니다. 
-
-```bash
-mkdir ~/build/
-```
-
-**CodeDeploy를 통해서 배포용 파일**들을 받을 디렉토리입니다.
-
 이외에 필요한 것들이 더 있으시면 설치하시면 됩니다.  
 (스프링부트 프로젝트에는 이외에는 별도로 필요한게 없습니다.)  
 
@@ -277,8 +269,83 @@ sudo chmod +x /etc/init.d/codedeploy-startup.sh
 
 EC2에 CodeDeloy Agent 설치가 완료되었습니다!  
 
-## 1-4. Code Deploy 생성하기
+## 1-4. 프로젝트 생성하기
+
+Code Deploy로 배포할 간단한 스프링부트 프로젝트를 생성하시고, 이를 Github과 연결합니다.  
+(제가 만든 프로젝트는 [여기](https://github.com/jojoldu/springboot-deploy)에 있습니다.)  
+  
+> 프로젝트 환경은 java8 / SpringBoot / Gradle 입니다.
+
+간단한 프로젝트 생성후, 프로젝트 내부에 ```appspec.yml```파일을 생성합니다.
+
+![codedeploy1](./images/codedeploy/codedeploy1.png)
+
+```yml
+version: 0.0
+os: linux
+files:
+  - source:  /
+    destination: /home/ec2-user/build/
+```
+
+AWS CodeDeploy는 이 ```appspec.yml```을 통해서 **어떤 파일들을, 어느 위치로 배포하고, 이후 어떤 스크립트를 실행**시킬것인지를 모두 관리합니다.  
+위 코드는 Code Build / S3 / Github 등을 통해서 받은 전체 파일들(```source:  /```)을 ```/home/ec2-user/build/```로 옮기겠다는 의미입니다. 
+
+자 그럼 EC2에  ```/home/ec2-user/build/```디렉토리를 생성합니다. 
+
+```bash
+mkdir /home/ec2-user/build/
+```
+
+![codedeploy2](./images/codedeploy/codedeploy2.png)
+
+여기까지 하셨다면, 기본적인 프로젝트 세팅은 끝났습니다.  
+
+## 1-5. Code Deploy 생성하기
+
+본격적으로 Code Deploy를 통해 EC2에 배포를 진행해보겠습니다.  
+
+### 1-5-1. Code Deploy용 Role 생성
+
+1-1.에서 생성한 Role은 EC2를 위한 Role입니다.  
+이번엔 **Code Deploy가 EC2에 접근할 수 있도록** Role을 생성하겠습니다.  
+
+![codedeploy-role1](./images/codedeploy/codedeploy-role1.png)
+
+서비스에선 1-1에서 **EC2를 선택한것과 달리, Code Deploy를 선택**합니다.
+
+![codedeploy-role2](./images/codedeploy/codedeploy-role2.png)
+
+![codedeploy-role3](./images/codedeploy/codedeploy-role3.png)
+
+![codedeploy-role4](./images/codedeploy/codedeploy-role4.png)
+
+마지막 생성까지 끝나시면, **신뢰할 수 있는 객체로 codedeploy를 가진** 역할이 하나 생성된 것을 확인할 수 있습니다.
+
+![codedeploy-role5](./images/codedeploy/codedeploy-role5.png)
+
+### 1-5-2. Code Deploy 생성
+
+AWS 웹 콘솔에 접속하셔서 AWS Code Deploy로 이동합니다.
+
+![codedeploy3](./images/codedeploy/codedeploy3.png)
 
 
+![codedeploy4](./images/codedeploy/codedeploy4.png)
 
+![codedeploy4](./images/codedeploy/codedeploy5.png)
+
+![codedeploy4](./images/codedeploy/codedeploy6.png)
+
+![codedeploy4](./images/codedeploy/codedeploy7.png)
+
+![codedeploy4](./images/codedeploy/codedeploy8.png)
+
+![codedeploy4](./images/codedeploy/codedeploy9.png)
+
+![codedeploy4](./images/codedeploy/codedeploy10.png)
+
+![codedeploy4](./images/codedeploy/codedeploy11.png)
+
+![codedeploy4](./images/codedeploy/codedeploy12.png)
 
