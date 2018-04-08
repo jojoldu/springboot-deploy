@@ -1,4 +1,4 @@
-# 2. AWS Code Pipeline으로 배포하기
+# 2. AWS Code Build로 빌드하기
 
 [지난 시간](http://jojoldu.tistory.com/281)에 Code Deploy 사용하는 방법에 대해 설명드렸습니다.  
   
@@ -21,7 +21,7 @@ Code Deploy에서 배포할 파일을 가져오는 방법은 2가지가 있습�
 배포 파일(WAR/JAR)을 Github에 다시 올리는건 너무 이상합니다.  
 그래서 보통은 **S3에 배포파일을 올리고 이를 Code Deploy에서 가져와서 EC2 혹은 ASG에 배포**하는게 기존의 AWS 배포 방식이였습니다.
 
-![아키텍처1](./images/codepipeline/아키텍처1.png)
+![아키텍처1](./images/codebuild/아키텍처1.png)
 
 이 방식으로 할 경우 개발자는 아래를 구축해야 합니다.
 
@@ -33,7 +33,7 @@ Code Deploy에서 배포할 파일을 가져오는 방법은 2가지가 있습�
 당장 서비스 만들기가 급한 상황에선 이런 작업들도 전부 공수가 들어가니, 쉽게 구축할 수 있는 방법이 필요합니다.  
 그래서 AWS는 **Code Build**와  **Code Pipeline**를 제공합니다.
 
-![codepipeline1](./images/codepipeline/codepipeline1.png)
+![codepipeline1](./images/codebuild/codepipeline1.png)
 
 * [Code Build](https://aws.amazon.com/ko/codebuild/)
   * AWS가 제공하는 Build Tool
@@ -46,7 +46,7 @@ Code Deploy에서 배포할 파일을 가져오는 방법은 2가지가 있습�
 이번 시간엔 이 Code Build와 Code Pipeline을 이용해 배포환경을 구축해보겠습니다.  
 전체 Flow는 아래와 같습니다.
 
-![codepipeline2](./images/codepipeline/codepipeline2.png)
+![codepipeline2](./images/codebuild/codepipeline2.png)
 
 * Github에서 Source 코드를 가져오고
 * Code Build를 통해 Build 해서
@@ -61,19 +61,19 @@ Code Deploy에서 배포할 파일을 가져오는 방법은 2가지가 있습�
 Code Build 부터 차례로 구축하겠습니다.  
 Code Build 서비스로 이동하신뒤, **프로젝트 만들기** 버튼을 클릭합니다.
 
-![codebuild1](./images/codepipeline/codebuild1.png)
+![codebuild1](./images/codebuild/codebuild1.png)
 
 Github연결 버튼을 클릭합니다.
 
-![codebuild2](./images/codepipeline/codebuild2.png)
+![codebuild2](./images/codebuild/codebuild2.png)
 
 OAuth 인증을 하시고
 
-![codebuild3](./images/codepipeline/codebuild3.png)
+![codebuild3](./images/codebuild/codebuild3.png)
 
 본인의 Github 저장소 URL을 등록합니다.  
 
-![codebuild4-1](./images/codepipeline/codebuild4-1.png)
+![codebuild4-1](./images/codebuild/codebuild4-1.png)
 
 Java8의 빌드환경을 가질테니 Java8을 선택합니다.  
 (현재 자바8과 9만 지원됩니다.)  
@@ -87,13 +87,13 @@ Java8의 빌드환경을 가질테니 Java8을 선택합니다.
 또한, Code Build 설정이 삭제됐다하더라도, 코드에 그대로 남아있어 재설정하기가 굉장히 편리합니다.)  
 여기서도 마찬가지로 buildspec.yml로 코드관리를 진행하겠습니다.
 
-![codebuild4-2](./images/codepipeline/codebuild4-2.png)
+![codebuild4-2](./images/codebuild/codebuild4-2.png)
 
 미리 생성한 S3 버킷 정보를 입력합니다.
 (참고로 버킷 목록에 본인의 버킷이 보이지 않는다면, 다시 Code Build 생성 페이지로 들어와 보세요.  
 목록 갱신이 실시간이 아니라서 생성 페이지로 이동할때만 다시 불러옵니다.)  
 
-![codebuild4-3](./images/codepipeline/codebuild4-3.png)
+![codebuild4-3](./images/codebuild/codebuild4-3.png)
 
 * 아티팩트
   * 빌드된 WAR/JAR를 보관할 위치를 나타냅니다.
@@ -104,26 +104,29 @@ Java8의 빌드환경을 가질테니 Java8을 선택합니다.
 
 미리 생성한 S3는 다음과 같습니다.
 
-![codebuild4-4](./images/codepipeline/codebuild4-4.png)
+![codebuild4-4](./images/codebuild/codebuild4-4.png)
 
 IAM Role의 경우 여기서 즉시 생성합니다.
 
-![codebuild4-5](./images/codepipeline/codebuild4-5.png)
+![codebuild4-5](./images/codebuild/codebuild4-5.png)
 
-자 그럼 이제 빌드를 한번 해볼텐데요.  
+그럼 Code Build가 생성되었습니다!  
+
+## 2-2. Code Build 실행하기
+
 방금 생성한 Code Build를 선택하고 **빌드 시작**버튼을 클릭합니다.
 
-![codebuild5](./images/codepipeline/codebuild5.png)
+![codebuild5](./images/codebuild/codebuild5.png)
 
 기본값으로 두고 바로 빌드시작을 하면 되는데요.  
 여기서 잠깐!
 
-![codebuild6](./images/codepipeline/codebuild6.png)
+![codebuild6](./images/codebuild/codebuild6.png)
 
 buildspec.yml이 아직 프로젝트에 추가되지 않았기 때문에 해당 파일을 추가하겠습니다.  
 프로젝트 안에 ```buildspec.yml```파일을 생성하고 아래와 같이 코드를 추가합니다.
 
-![codebuild7](./images/codepipeline/codebuild7.png)
+![codebuild7](./images/codebuild/codebuild7.png)
 
 ```yml
 version: 0.2
@@ -158,74 +161,27 @@ cache:
   * maven: ```'/root/.m2/**/*'```
   * 그 외 Path [참고](https://aws.amazon.com/ko/blogs/devops/how-to-enable-caching-for-aws-codebuild/)
 
-![codebuild8-1](./images/codepipeline/codebuild8-1.png)
+![codebuild8-1](./images/codebuild/codebuild8-1.png)
 
 (Build가 **1분 4초**가 소모된걸 확인할 수 있습니다.)  
   
 Build 로그를 보시면 원하던대로 커맨드가 실행되서 로그 출력 되는걸 확인할 수 있습니다.
 
-![codebuild8-2](./images/codepipeline/codebuild8-2.png)
+![codebuild8-2](./images/codebuild/codebuild8-2.png)
 
 자 Build가 정상적으로 수행되는건 확인되었습니다.  
 그럼 캐시 기능이 잘 되는지 한번 확인해보겠습니다.  
 빌드 화면 위를 보시면 **재시도**버튼이 있습니다.  
 재시도 해봅니다.
 
-![codebuild9-1](./images/codepipeline/codebuild9-1.png)
+![codebuild9-1](./images/codebuild/codebuild9-1.png)
 
 재시로 로그를 보시면 기존에 받던 의존성들을 더이상 받지 않고 S3에서 파일을 하나 받아 ```unzip``` 하는걸 알 수 있습니다.  
 
-![codebuild9-2](./images/codepipeline/codebuild9-2.png)
+![codebuild9-2](./images/codebuild/codebuild9-2.png)
 
 실제로 Build 수행 시간도 1분이 넘던 것이 **36초로 대폭 개선**된 것을 볼 수 있습니다.  
   
 Code Deploy와 Code Build를 모두 생성해봤습니다!  
 이제 Code Pipeline으로 이들을 연결해보겠습니다.  
 
-## 2-2. Code Pipeline 구축하기
-
-먼저 Code Pipeline 웹콘솔로 이동합니다.  
-**파이프라인 생성**버튼을 클릭합니다.
-
-![codepipeline3](./images/codepipeline/codepipeline3.png)
-
-Code Pipeline 이름을 등록합니다.
-
-![codepipeline4](./images/codepipeline/codepipeline4.png)
-
-소스를 Github에 가져오도록 선택하고, **Github에 연결**을 클릭합니다.
-
-![codepipeline5-1](./images/codepipeline/codepipeline5-1.png)
-
-OAuth 리다이렉트가 끝나면 리포지토리와 브랜치를 선택합니다.
-
-![codepipeline5-2](./images/codepipeline/codepipeline5-2.png)
-
-여기서 고급을 보면 실행 트리거가 2개가 있음을 알 수 있습니다.  
-
-* master 브랜치에 PUSH 발생시 자동 실행
-* 파이프라인 수동 실행
-
-이번 포스팅에선 **수동 실행**을 선택하겠습니다.  
-
-![codepipeline6](./images/codepipeline/codepipeline6.png)
-
-![codepipeline7](./images/codepipeline/codepipeline7.png)
-
-![codepipeline8](./images/codepipeline/codepipeline8.png)
-
-![codepipeline9](./images/codepipeline/codepipeline9.png)
-
-![codepipeline10](./images/codepipeline/codepipeline10.png)
-
-![codepipeline11](./images/codepipeline/codepipeline11.png)
-
-![codepipeline12](./images/codepipeline/codepipeline12.png)
-
-배포하기 전에 Code Deploy로 채워진 ```~/build/``` 디렉토리를 싹 비우겠습니다.
-
-```bash
-sudo rm -rf ~/build/*
-```
-
-![codepipeline13](./images/codepipeline/codepipeline13.png)
