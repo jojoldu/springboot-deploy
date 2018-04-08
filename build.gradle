@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-archivesBaseName = 'springboot-deploy' // CodeBuild 수행시 jar명이 src-버전.jar로 되어서 jar명 강제지정
+//archivesBaseName = 'springboot-deploy' // CodeBuild 수행시 jar명이 src-버전.jar로 되어서 jar명 강제지정
 group = 'com.github.jojoldu.aws'
 version = '0.1.0-SNAPSHOT'
 sourceCompatibility = 1.8
