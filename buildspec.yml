@@ -8,12 +8,9 @@ phases:
       - ./gradlew build
   post_build:
     commands:
-      - mv ./build/libs/*.jar ./
-artifacts:
-  files:
-    - appspec.yml
-    - scripts/**
-    - springboot-deploy*.jar
+      - echo $(basename ./build/libs/*.jar)
+      - pwd
+
 
 cache:
   paths:
