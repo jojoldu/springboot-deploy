@@ -4,12 +4,12 @@ files:
   - source:  /
     destination: /home/ec2-user/build/
 
-hooks:
-  ApplicationStart:
-    - location: scripts/deploy.sh
-      timeout: 60
-      runas: ec2-user
-  ValidateService:
-    - location: scripts/healthCheck.sh
-      timeout: 60
-      runas: ec2-user
+#hooks:
+#  ApplicationStart:
+#    - location: scripts/deploy.sh
+#      timeout: 60
+#      runas: ec2-user
+#  ValidateService:
+#    - location: scripts/healthCheck.sh
+#      timeout: 60
+#      runas: ec2-user
