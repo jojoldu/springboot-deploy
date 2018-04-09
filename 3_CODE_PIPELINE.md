@@ -164,4 +164,161 @@ archivesBaseName = 'springboot-deploy'
 
 자 이제 Code Pipeline으로 빌드된 Jar를 EC2에 전송하는것까지가 완성되었습니다.  
 배포가 여기서 끝이 아니죠?  
-결국 배포된 Jar를 서버에서 자동실행되고, 잘 실행되었는지 체크까지 되야만 합니다.  
+결국 **서버에서 배포된 Jar를 자동 실행**하고, 잘 **실행되었는지 체크**까지 되야만 합니다.  
+이 부분 역시 AWS 내부에서 해결하지 않고, 코드로 해결해보겠습니다.  
+먼저 프로젝트 내부에 ```scripts```라는 디렉토리를 생성합니다.  
+그리고 이 디렉토리 안에 2개의 쉘 스크립트 파일을 생성합니다.
+
+* deploy.sh
+  * 배포된 스프링부트 Jar를 실행시킬 스크립트
+* healthCheck.sh
+  * 스프링부트 Jar가 잘 수행되었는지 확인하는 스크립트
+
+
+![springboot1](./images/codepipeline/springboot1.png)
+
+각각의 스크립트 코드는 아래와 같습니다.  
+  
+**deploy.sh**
+
+```bash
+#!/bin/bash
+BUILD_PATH=$(ls /home/ec2-user/build/*.jar)
+JAR_NAME=$(basename $BUILD_PATH)
+echo "> build 파일명: $JAR_NAME"
+
+echo "> build 파일 복사"
+DEPLOY_PATH=/home/ec2-user/
+cp $BUILD_PATH $DEPLOY_PATH
+
+echo "> springboot-deploy.jar 교체"
+CP_JAR_PATH=$DEPLOY_PATH$JAR_NAME
+APPLICATION_JAR_NAME=springboot-deploy.jar
+APPLICATION_JAR=$DEPLOY_PATH$APPLICATION_JAR_NAME
+
+ln -Tfs $CP_JAR_PATH $APPLICATION_JAR
+
+echo "> 현재 실행중인 애플리케이션 pid 확인"
+CURRENT_PID=$(pgrep -f $APPLICATION_JAR_NAME)
+
+if [ -z $CURRENT_PID ]
+then
+  echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
+else
+  echo "> kill -15 $CURRENT_PID"
+  kill -15 $CURRENT_PID
+  sleep 5
+fi
+
+echo "> $APPLICATION_JAR 배포"
+nohup java -jar $APPLICATION_JAR > /dev/null 2> /dev/null < /dev/null &
+```
+
+**healthCheck.sh**
+
+```bash
+#!/bin/bash
+echo "> Health check 시작"
+echo "> curl -s http://localhost:8080/actuator/health "
+
+for RETRY_COUNT in {1..15}
+do
+  RESPONSE=$(curl -s http://localhost:8080/actuator/health)
+  UP_COUNT=$(echo $RESPONSE | grep 'UP' | wc -l)
+
+  if [ $UP_COUNT -ge 1 ]
+  then # $up_count >= 1 ("UP" 문자열이 있는지 검증)
+      echo "> Health check 성공"
+      break
+  else
+      echo "> Health check의 응답을 알 수 없거나 혹은 status가 UP이 아닙니다."
+      echo "> Health check: ${RESPONSE}"
+  fi
+
+  if [ $RETRY_COUNT -eq 10 ]
+  then
+    echo "> Health check 실패. "
+    exit 1
+  fi
+
+  echo "> Health check 연결 실패. 재시도..."
+  sleep 10
+done
+exit 0
+```
+
+이 스크립트들은 Code Deploy로 배포파일을 받은 후에 실행되어야 합니다.  
+
+AWS Code Deploy의 Hooks 시점은 아래와 같습니다.  
+(여기서 회식 표시된 시점은 사용자가 커스텀하게 Hook처리를 할수 없습니다.)  
+
+![springboot2](./images/codepipeline/springboot2.png)
+
+여기서 Install이 전달받은 Zip 파일을 푸는 시점입니다.  
+즉, Jar를 실행하고, 검증하는 부분은 이 이후 시점에 진행되어야하는데요.  
+권장하는 시점은
+
+* 프로젝트 실행: ApplicationStart
+* 검증: ValidateService
+
+입니다.  
+  
+그래서 2개의 스크립트 실행시점을 appspec.yml에 설정하겠습니다.
+
+![springboot3](./images/codepipeline/springboot3.png)
+
+```yml
+version: 0.0
+os: linux
+files:
+  - source:  /
+    destination: /home/ec2-user/build/
+
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+
+hooks:
+  ApplicationStart:
+    - location: scripts/deploy.sh
+      timeout: 60
+      runas: ec2-user
+  ValidateService:
+    - location: scripts/healthCheck.sh
+      timeout: 60
+      runas: ec2-user
+```
+
+그리고 scripts 디렉토리도 Code Build 대상에 포함되도록 buildspec.yml도 수정합니다.
+
+![springboot4](./images/codepipeline/springboot4.png)
+
+```yml
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo Build Starting on `date`
+      - chmod +x ./gradlew
+      - ./gradlew build
+  post_build:
+    commands:
+      - echo $(basename ./build/libs/*.jar)
+      - pwd
+
+artifacts:
+  files:
+    - appspec.yml
+    - build/libs/*.jar
+    - scripts/** 
+  discard-paths: yes
+
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
+```
+
+이렇게 수정후 PUSH 한뒤에 다시 배포를 해보겠습니다.
