@@ -282,11 +282,11 @@ permissions:
 
 hooks:
   ApplicationStart:
-    - location: scripts/deploy.sh
+    - location: deploy.sh
       timeout: 60
       runas: ec2-user
   ValidateService:
-    - location: scripts/healthCheck.sh
+    - location: healthCheck.sh
       timeout: 60
       runas: ec2-user
 ```
@@ -321,4 +321,21 @@ cache:
     - '/root/.gradle/caches/**/*'
 ```
 
-이렇게 수정후 PUSH 한뒤에 다시 배포를 해보겠습니다.
+이렇게 수정후 PUSH 한뒤에 다시 배포를 해보겠습니다.  
+
+![springboot5](./images/codepipeline/springboot5.png)
+
+배포가 성공적으로 진행된 후, EC2 에서 확인해보시면 스프링부트 프로젝트가 정상적으로 실행되어있음을 알 수 있습니다.
+
+![springboot6](./images/codepipeline/springboot6.png)
+
+자 그럼 실제로 브라우저에서 접속해보시면!
+
+![springboot7](./images/codepipeline/springboot7.png)
+
+정상적으로 프로젝트가 실행되어서 호스팅되고 있습니다!  
+  
+**Code Pipeline으로 배포 환경을 구축**해봤습니다!  
+여기까지 과정은 하나의 EC2에 배포하는 과정이였습니다.  
+다음 시간엔 **EC2 배포에서 ASG(Auto Scaling Group) 배포로 확장**하는 방법을 소개드리겠습니다.  
+감사합니다^^
