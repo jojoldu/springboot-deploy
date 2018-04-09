@@ -11,6 +11,11 @@ phases:
       - echo $(basename ./build/libs/*.jar)
       - pwd
 
+artifacts:
+  files:
+    - appspec.yml
+    - scripts/**
+    - build/libs/*.jar
 
 cache:
   paths:
