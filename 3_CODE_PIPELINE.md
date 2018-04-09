@@ -60,3 +60,32 @@ sudo rm -rf ~/build/*
 
 ![codepipeline13](./images/codepipeline/codepipeline13.png)
 
+자 현재 ```~/build/``` 에는 아무것도 없습니다.  
+배포가 완료되면 지정된 파일들이 있겠죠?  
+배포가 진행되기 전에 프로젝트의 ```buildspec.yml```을 조금 수정하겠습니다.
+
+![codepipeline14](./images/codepipeline/codepipeline14.png)
+
+```yml
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo Build Starting on `date`
+      - chmod +x ./gradlew
+      - ./gradlew build
+  post_build:
+    commands:
+      - echo $(basename ./build/libs/*.jar)
+      - pwd
+
+artifacts:
+  files:
+    - appspec.yml
+    - build/libs/*.jar
+
+cache:
+  paths:
+    - '/root/.gradle/caches/**/*'
+```
