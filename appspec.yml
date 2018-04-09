@@ -10,12 +10,3 @@ permissions:
     owner: ec2-user
     group: ec2-user
 
-#hooks:
-#  ApplicationStart:
-#    - location: scripts/deploy.sh
-#      timeout: 60
-#      runas: ec2-user
-#  ValidateService:
-#    - location: scripts/healthCheck.sh
-#      timeout: 60
-#      runas: ec2-user
