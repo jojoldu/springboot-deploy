@@ -10,7 +10,6 @@ phases:
     commands:
       - echo $(basename ./build/libs/*.jar)
       - pwd
-      - chown -R ec2-user:ec2-user ./ # 디렉토리 전체파일에 사용자:ec2-user, 그룹:ec2-user 로 권한 전환
 
 artifacts:
   files:
