@@ -153,3 +153,15 @@ archivesBaseName = 'springboot-deploy'
 ```
 
 ![codepipeline19](./images/codepipeline/codepipeline19.png)
+
+다시 배포를 실행해봅니다.
+
+![codepipeline20](./images/codepipeline/codepipeline20.png)
+
+원하던 프로젝트명으로 Jar가 생성되어서 전달되었음을 확인할 수 있습니다!
+
+## 3-2. Code Pipeline으로 스프링부트 실행하기
+
+자 이제 Code Pipeline으로 빌드된 Jar를 EC2에 전송하는것까지가 완성되었습니다.  
+배포가 여기서 끝이 아니죠?  
+결국 배포된 Jar를 서버에서 자동실행되고, 잘 실행되었는지 체크까지 되야만 합니다.  
